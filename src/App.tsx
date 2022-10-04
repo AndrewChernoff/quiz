@@ -1,5 +1,6 @@
 import { useState } from "react";
-import styles from "./App.module.css";
+//import styles from "./App.module.css";
+import GlobalStyle, { Content } from "./utils/globalStyles";
 import shuffleArr from "./utils/shuffleArr";
 
 type Resp = {
@@ -22,7 +23,7 @@ const App = () => {
   const [quizNumber, setQuizNumber] = useState(0);
   const [isAnswered, setIsAnswered] = useState(false);
   const [score, setScore] = useState(0);
-  const [gameOver, setGameOver] = useState(true);
+  //const [gameOver, setGameOver] = useState(true);
   const [isFinished, setIsFinished] = useState(false);
   const [start, setStart] = useState(false);
 
@@ -36,17 +37,18 @@ const App = () => {
       return {
         question: el.question,
         answers: shuffleArr([...el.incorrect_answers, el.correct_answer]),
-        correctAnswer: el.correct_answer
+        correctAnswer: el.correct_answer,
       };
     });
   };
 
   const onStartClick = () => {
     setStart(true);
-    setIsFinished(false)
+    setScore(0);
+    setIsFinished(false);
     setIsAnswered(false);
-    setGameOver(false)
-    setQuizNumber(0)
+    //setGameOver(false);
+    setQuizNumber(0);
     loadQuestions().then((res) => {
       setQuizQuestions(res);
     });
@@ -55,40 +57,67 @@ const App = () => {
   const onNextClick = () => {
     setQuizNumber(quizNumber + 1);
     setIsAnswered(false);
-  }
+  };
 
-  const checkAnswer = (e:any) => {
-    //setIsAnswered(true);
-    const isTrueAnswer = e.currentTarget.value === (quizQuestions[quizNumber]).correctAnswer;
-    console.log(isTrueAnswer)
-    if (isTrueAnswer) setScore(score => score + 1);
+  const checkAnswer = (e: any) => {
+    const isTrueAnswer =
+      e.currentTarget.value === quizQuestions[quizNumber].correctAnswer;
+    console.log(isTrueAnswer);
+    if (isTrueAnswer) setScore((score) => score + 1);
     setIsAnswered(true);
-    if((quizNumber + 1) === quizQuestions.length) {
-      setGameOver(true);
+    if (quizNumber + 1 === quizQuestions.length) {
+      //setGameOver(true);
       setIsFinished(true);
       setStart(false);
-    };
-  }
+    }
+  };
 
   return (
-    <div>
-      <h1>REACT Quiz</h1>
-      
-      {!start ? <button onClick={onStartClick}>start</button> : null}
-      
-      {quizQuestions.length !== 0? <div> {quizNumber + 1} / {quizQuestions.length} </div>: null}
-      <p>Score: {score} </p>
+    <>
+      <GlobalStyle />
+      <Content>
+        <h1>REACT Quiz</h1>
 
-      <div>{quizQuestions.length !== 0? (quizQuestions[quizNumber]).question : null}</div>
+        {!start ? <button onClick={onStartClick} className="quiz__start">start</button> : null}
 
-      <div className={styles.quiz__answers}>
-        {quizQuestions.length !== 0? (quizQuestions[quizNumber]).answers.map((el, i) => {
-          return <button key={i} onClick={checkAnswer} disabled={isAnswered} value={el}>{el}</button>;
-        }): null}
-      </div>
+        <div className="quiz__score">Score: {score} </div>
+        {quizQuestions.length !== 0 ? (
+          <div className="quiz__content">
+            <p className="quiz__number">
+              {quizNumber + 1} / {quizQuestions.length}{" "}
+            </p>
+            <p>
+              {quizQuestions.length !== 0
+                ? quizQuestions[quizNumber].question
+                : null}
+            </p>
 
-      {!isFinished && isAnswered? <button onClick={onNextClick} >Next question</button> : null}
-    </div>
+            <div className="quiz__answers">
+              {quizQuestions.length !== 0
+                ? quizQuestions[quizNumber].answers.map((el, i) => {
+                    return (
+                      <button
+                        key={i}
+                        onClick={checkAnswer}
+                        disabled={isAnswered}
+                        value={el}
+                      >
+                        {el}
+                      </button>
+                    );
+                  })
+                : null}
+            </div>
+
+            
+          </div>
+        ) : null}
+
+{!isFinished && isAnswered ? (
+              <button onClick={onNextClick} className="quiz__nextQuestion">Next question</button>
+            ) : null}
+      </Content>
+    </>
   );
 };
 
