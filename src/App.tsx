@@ -1,4 +1,5 @@
 import { useState } from "react";
+import QuestionItem from "./componets/QuestionItem";
 //import styles from "./App.module.css";
 import GlobalStyle, { Content } from "./utils/globalStyles";
 import shuffleArr from "./utils/shuffleArr";
@@ -23,11 +24,13 @@ const App = () => {
   const [quizNumber, setQuizNumber] = useState(0);
   const [isAnswered, setIsAnswered] = useState(false);
   const [score, setScore] = useState(0);
-  //const [gameOver, setGameOver] = useState(true);
   const [isFinished, setIsFinished] = useState(false);
   const [start, setStart] = useState(false);
+  const [loading, setLoading] = useState(false);
+  let [userAnswer, setUserAnswer] = useState<any>([]);
 
   const loadQuestions = async () => {
+    setLoading(true);
     const res = await (
       await fetch(
         "https://opentdb.com/api.php?amount=10&difficulty=medium&type=multiple"
@@ -47,10 +50,10 @@ const App = () => {
     setScore(0);
     setIsFinished(false);
     setIsAnswered(false);
-    //setGameOver(false);
     setQuizNumber(0);
     loadQuestions().then((res) => {
       setQuizQuestions(res);
+      setLoading(false);
     });
   };
 
@@ -60,13 +63,20 @@ const App = () => {
   };
 
   const checkAnswer = (e: any) => {
-    const isTrueAnswer =
-      e.currentTarget.value === quizQuestions[quizNumber].correctAnswer;
-    console.log(isTrueAnswer);
-    if (isTrueAnswer) setScore((score) => score + 1);
+    //setUserAnswer(e.currentTarget.value);
+
+    const currentAnswer = e.currentTarget.value;
+    setUserAnswer((prev: any) => [...prev, currentAnswer]);
+
+    if (e.currentTarget.value === quizQuestions[quizNumber].correctAnswer) {
+      setScore((score) => score + 1);
+      console.log("green");
+    } else {
+      console.log("red");
+    }
+
     setIsAnswered(true);
     if (quizNumber + 1 === quizQuestions.length) {
-      //setGameOver(true);
       setIsFinished(true);
       setStart(false);
     }
@@ -78,13 +88,18 @@ const App = () => {
       <Content>
         <h1>REACT Quiz</h1>
 
-        {!start ? <button onClick={onStartClick} className="quiz__start">start</button> : null}
+        {!start ? (
+          <button onClick={onStartClick} className="quiz__start">
+            start
+          </button>
+        ) : null}
+        {loading ? <h2 className="quiz__loading">Loading...</h2> : null}
 
         <div className="quiz__score">Score: {score} </div>
         {quizQuestions.length !== 0 ? (
           <div className="quiz__content">
             <p className="quiz__number">
-              {quizNumber + 1} / {quizQuestions.length}{" "}
+              {quizNumber + 1} / {quizQuestions.length}
             </p>
             <p>
               {quizQuestions.length !== 0
@@ -96,26 +111,29 @@ const App = () => {
               {quizQuestions.length !== 0
                 ? quizQuestions[quizNumber].answers.map((el, i) => {
                     return (
-                      <button
+                      <QuestionItem
+                        isCorrect={
+                          quizQuestions[quizNumber].correctAnswer === el
+                            ? true
+                            : false
+                        }
                         key={i}
-                        onClick={checkAnswer}
-                        disabled={isAnswered}
+                        checkAnswer={checkAnswer}
+                        isAnswered={isAnswered}
                         value={el}
-                      >
-                        {el}
-                      </button>
+                      />
                     );
                   })
                 : null}
             </div>
-
-            
           </div>
         ) : null}
 
-{!isFinished && isAnswered ? (
-              <button onClick={onNextClick} className="quiz__nextQuestion">Next question</button>
-            ) : null}
+        {!isFinished && isAnswered ? (
+          <button onClick={onNextClick} className="quiz__nextQuestion">
+            Next question
+          </button>
+        ) : null}
       </Content>
     </>
   );
