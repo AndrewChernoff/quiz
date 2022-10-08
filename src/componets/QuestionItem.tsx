@@ -1,19 +1,32 @@
 import { Button } from "./QuestionItem.styles";
 
-type Props = {
+/* type Props = {
     checkAnswer: (e: any) => void ,
     isAnswered: boolean,
     value: string,
     isCorrect: boolean
-}
+} */
 
-const QuestionItem: React.FC<Props> = ({checkAnswer, isAnswered, value, isCorrect}) => {
-  return (
-    <Button isCorrect={isCorrect} isAnswered={isAnswered}>
-    <button onClick={checkAnswer} disabled={isAnswered} value={value}>
-      {value}
-    </button>
-    </Button>
+type Props = {
+  questions: string[],
+  isAnswered: boolean,
+  checkAnswer: (e:any) => void,
+  userAnswers: any[],
+  quizNumber: number
+};
+
+const QuestionItem: React.FC<Props> = ({ questions, isAnswered, userAnswers, quizNumber, checkAnswer }) => {
+  return (<>
+      {questions.map((el, i) => {
+        return (
+          <Button key={i} isCorrect={userAnswers[quizNumber]?.correctAnswer === el} isAnswered={isAnswered}  isClicked={userAnswers[quizNumber]?.isClicked}>
+            <button onClick={checkAnswer} disabled={isAnswered} value={el}>
+              {el}
+            </button>
+          </Button>
+        );
+      })}
+      </>
   );
 };
 

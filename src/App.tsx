@@ -1,6 +1,5 @@
 import { useState } from "react";
 import QuestionItem from "./componets/QuestionItem";
-//import styles from "./App.module.css";
 import GlobalStyle, { Content } from "./utils/globalStyles";
 import shuffleArr from "./utils/shuffleArr";
 
@@ -27,7 +26,7 @@ const App = () => {
   const [isFinished, setIsFinished] = useState(false);
   const [start, setStart] = useState(false);
   const [loading, setLoading] = useState(false);
-  let [userAnswer, setUserAnswer] = useState<any>([]);
+  const [userAnswers, setUserAnswers] = useState<any>([]);
 
   const loadQuestions = async () => {
     setLoading(true);
@@ -46,6 +45,7 @@ const App = () => {
   };
 
   const onStartClick = () => {
+    setUserAnswers([])
     setStart(true);
     setScore(0);
     setIsFinished(false);
@@ -63,16 +63,17 @@ const App = () => {
   };
 
   const checkAnswer = (e: any) => {
-    //setUserAnswer(e.currentTarget.value);
+    const answer = e.currentTarget.value;
+    const correct = answer === quizQuestions[quizNumber].correctAnswer
+    setUserAnswers((prev: any) => [...prev, {
+      userAnswer: answer,
+      isCorrect: correct,
+      correctAnswer: quizQuestions[quizNumber].correctAnswer,
+      isClicked: true
+    }]);
 
-    const currentAnswer = e.currentTarget.value;
-    setUserAnswer((prev: any) => [...prev, currentAnswer]);
-
-    if (e.currentTarget.value === quizQuestions[quizNumber].correctAnswer) {
+    if (answer === quizQuestions[quizNumber].correctAnswer) {
       setScore((score) => score + 1);
-      console.log("green");
-    } else {
-      console.log("red");
     }
 
     setIsAnswered(true);
@@ -109,21 +110,12 @@ const App = () => {
 
             <div className="quiz__answers">
               {quizQuestions.length !== 0
-                ? quizQuestions[quizNumber].answers.map((el, i) => {
-                    return (
-                      <QuestionItem
-                        isCorrect={
-                          quizQuestions[quizNumber].correctAnswer === el
-                            ? true
-                            : false
-                        }
-                        key={i}
-                        checkAnswer={checkAnswer}
-                        isAnswered={isAnswered}
-                        value={el}
-                      />
-                    );
-                  })
+                ?<QuestionItem questions={quizQuestions[quizNumber].answers} 
+                  isAnswered={isAnswered}
+                  userAnswers={userAnswers}
+                  quizNumber={quizNumber}
+                  checkAnswer={checkAnswer}
+                  />
                 : null}
             </div>
           </div>
