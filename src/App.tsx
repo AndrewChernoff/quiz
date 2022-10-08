@@ -90,13 +90,18 @@ const App = () => {
         <h1>REACT Quiz</h1>
 
         {!start ? (
+          <>
           <button onClick={onStartClick} className="quiz__start">
-            start
+            Start
           </button>
+                  <div className="quiz__score">Score: {score} </div>
+                  </>
         ) : null}
         {loading ? <h2 className="quiz__loading">Loading...</h2> : null}
 
         <div className="quiz__score">Score: {score} </div>
+
+        
         {quizQuestions.length !== 0 ? (
           <div className="quiz__content">
             <p className="quiz__number">
