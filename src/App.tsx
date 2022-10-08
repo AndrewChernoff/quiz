@@ -45,7 +45,7 @@ const App = () => {
   };
 
   const onStartClick = () => {
-    setUserAnswers([])
+    setUserAnswers([]);
     setStart(true);
     setScore(0);
     setIsFinished(false);
@@ -63,16 +63,19 @@ const App = () => {
   };
 
   const checkAnswer = (elementValue: string, id: any) => {
-    console.log(id)
+    console.log(id);
     const answer = elementValue;
-    const correct = answer === quizQuestions[quizNumber].correctAnswer
-    setUserAnswers((prev: any) => [...prev, {
-      ansId: id,
-      userAnswer: answer,
-      isCorrect: correct,
-      correctAnswer: quizQuestions[quizNumber].correctAnswer,
-      isClicked: true
-    }]);
+    const correct = answer === quizQuestions[quizNumber].correctAnswer;
+    setUserAnswers((prev: any) => [
+      ...prev,
+      {
+        ansId: id,
+        userAnswer: answer,
+        isCorrect: correct,
+        correctAnswer: quizQuestions[quizNumber].correctAnswer,
+        isClicked: true,
+      },
+    ]);
 
     if (answer === quizQuestions[quizNumber].correctAnswer) {
       setScore((score) => score + 1);
@@ -93,39 +96,40 @@ const App = () => {
 
         {!start ? (
           <>
-          <button onClick={onStartClick} className="quiz__start">
-            Start
-          </button>
-                  <div className="quiz__score">Score: {score} </div>
-                  </>
+            <button onClick={onStartClick} className="quiz__start">
+              Start
+            </button>
+            <div className="quiz__score">Score: {score} </div>
+          </>
         ) : null}
         {loading ? <h2 className="quiz__loading">Loading...</h2> : null}
-        
+
         {quizQuestions.length !== 0 ? (
           <>
-          <div className="quiz__score">Score: {score} </div>
-          
-          <div className="quiz__content">
-            <p className="quiz__number">
-              {quizNumber + 1} / {quizQuestions.length}
-            </p>
-            <p>
-              {quizQuestions.length !== 0
-                ? quizQuestions[quizNumber].question
-                : null}
-            </p>
+            <div className="quiz__score">Score: {score} </div>
 
-            <div className="quiz__answers">
-              {quizQuestions.length !== 0
-                ?<QuestionItem questions={quizQuestions[quizNumber].answers} 
-                  isAnswered={isAnswered}
-                  userAnswers={userAnswers}
-                  quizNumber={quizNumber}
-                  checkAnswer={checkAnswer}
+            <div className="quiz__content">
+              <p className="quiz__number">
+                {quizNumber + 1} / {quizQuestions.length}
+              </p>
+              <p>
+                {quizQuestions.length !== 0
+                  ? quizQuestions[quizNumber].question.replace(/&quot;/g, '"').replace(/&#039;/g, "'").replace(/&eacute;/, 'e')
+                  : null}
+              </p>
+
+              <div className="quiz__answers">
+                {quizQuestions.length !== 0 ? (
+                  <QuestionItem
+                    questions={quizQuestions[quizNumber].answers}
+                    isAnswered={isAnswered}
+                    userAnswers={userAnswers}
+                    quizNumber={quizNumber}
+                    checkAnswer={checkAnswer}
                   />
-                : null}
+                ) : null}
+              </div>
             </div>
-          </div>
           </>
         ) : null}
 
