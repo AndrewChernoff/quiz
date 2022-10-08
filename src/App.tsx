@@ -62,10 +62,12 @@ const App = () => {
     setIsAnswered(false);
   };
 
-  const checkAnswer = (e: any) => {
-    const answer = e.currentTarget.value;
+  const checkAnswer = (elementValue: string, id: any) => {
+    console.log(id)
+    const answer = elementValue;
     const correct = answer === quizQuestions[quizNumber].correctAnswer
     setUserAnswers((prev: any) => [...prev, {
+      ansId: id,
       userAnswer: answer,
       isCorrect: correct,
       correctAnswer: quizQuestions[quizNumber].correctAnswer,
@@ -98,11 +100,11 @@ const App = () => {
                   </>
         ) : null}
         {loading ? <h2 className="quiz__loading">Loading...</h2> : null}
-
-        <div className="quiz__score">Score: {score} </div>
-
         
         {quizQuestions.length !== 0 ? (
+          <>
+          <div className="quiz__score">Score: {score} </div>
+          
           <div className="quiz__content">
             <p className="quiz__number">
               {quizNumber + 1} / {quizQuestions.length}
@@ -124,6 +126,7 @@ const App = () => {
                 : null}
             </div>
           </div>
+          </>
         ) : null}
 
         {!isFinished && isAnswered ? (

@@ -3,7 +3,8 @@ import styled from "styled-components";
 type ButtonProps = {
   isCorrect: boolean,
   isAnswered: boolean,
-  isClicked: boolean
+  isClicked: boolean,
+  isAnswerId: boolean
 }
 
 export const Button = styled.div<ButtonProps>`
@@ -15,10 +16,10 @@ button {
   width: 100%;
   height: 40px;
   margin: 5px 0px;
-  background: ${({ isCorrect, isClicked }) =>
+  background: ${({ isCorrect, isClicked, isAnswerId }) =>
   isCorrect && isClicked
         ? 'linear-gradient(90deg, #56FFA4, #59BC86)'
-        : !isCorrect && isClicked
+        : !isCorrect && isClicked && isAnswerId
         ? 'linear-gradient(90deg, #FF5656, #C16868)'
         : 'linear-gradient(90deg, #56ccff, #6eafb4)' 
 };
